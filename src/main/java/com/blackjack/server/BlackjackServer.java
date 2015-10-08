@@ -8,6 +8,9 @@ import java.net.Socket;
 
 import org.apache.log4j.Logger;
 
+import static com.blackjack.server.util.ServerProperties.PORT;
+import static com.blackjack.server.util.ServerProperties.NAME;
+
 /**
  * @author Timur Berezhnoi
  */
@@ -15,20 +18,14 @@ public class BlackjackServer {
 	
 	private final Logger logger = Logger.getLogger(this.getClass());
 	
-	private final int port;
-
 	private Socket socket;
 	private ServerSocket server;
 
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 
-	public BlackjackServer(int port) {
-		this.port = port;
-	}
-
 	public void startUp() throws IOException {
-		server = new ServerSocket(port);
+		server = new ServerSocket((int) PORT.getValue());
 		waitForConnection();
 		setUpStreams();
 	}
@@ -56,5 +53,10 @@ public class BlackjackServer {
 
 	public void shutDown() throws IOException {
 		socket.close();
+	}
+	
+	@Override
+	public String toString() {
+		return (String) NAME.getValue();
 	}
 }

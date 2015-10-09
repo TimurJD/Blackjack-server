@@ -20,4 +20,5 @@ public class ServerPropertiesTest {
 		String expected = "Blackjack server";
 		assertEquals(expected, ServerProperties.NAME.getValue());
 	}
+
 }

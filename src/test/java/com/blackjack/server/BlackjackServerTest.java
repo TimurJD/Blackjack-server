@@ -1,157 +1,98 @@
 package com.blackjack.server;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.concurrent.TimeUnit;
+
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
+
+import com.blackjack.server.exception.EmptyPropertyException;
 
 /**
  * @author Timur Berezhnoi
  */
 public class BlackjackServerTest {
-	
+
+	private Socket client;
+	private ObjectOutputStream clientOut;
+	private ObjectInputStream clientIn;
+
 	private BlackjackServer server;
-	
+
 	@Before
-	public void setUp() {
+	public void setUp() throws UnknownHostException, IOException, InterruptedException {
 		server = new BlackjackServer();
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					TimeUnit.MILLISECONDS.sleep(100);
+					client = new Socket("127.0.0.1", 7765);
+					clientOut = new ObjectOutputStream(client.getOutputStream());
+					clientIn = new ObjectInputStream(client.getInputStream());
+				} catch (UnknownHostException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}.start();
+		
+		try {
+			server.startUp();
+		} catch (EmptyPropertyException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void testClienConnection() {
+		assertTrue(server.isClientConnected());
+	}
+
+	@Test
+	public void shouldGetMessageFromClient() {
+		String expected = "Hello World!";
+		try {
+			clientOut.writeObject(expected);
+			assertEquals(expected, server.getDataFromClient());
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Test
-	public void doSmth() {
-		
+	public void shouldSendMessageToClient() {
+		String expected = "Hello World!";
+		try {
+			server.sendDataToClient(expected);
+			assertEquals(expected, clientIn.readObject());
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@After
+	public void tearDown() {
+		try {
+			server.shutDown();
+			client.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
-
-//package cscie160.lecture7;
-//
-//import static org.junit.Assert.assertEquals;
-//import static org.junit.Assert.assertTrue;
-// 
-//import java.io.IOException;
-//import java.io.PrintWriter;
-//import java.net.Socket;
-//import java.util.Scanner;
-// 
-//import org.junit.Before;
-//import org.junit.Test;
-// 
-//public class EchoServerTest {
-// 
-//    private static final String TEST_HOSTNAME = "localhost";
-//    private static final int TEST_PORT = 8192;
-//    EchoServer echoServer = null;
-// 
-//    @Before
-//    public void initialize() {
-//        echoServer = new EchoServer();
-//    }
-// 
-//    @Test
-//    public void testClientConnects() {
-//        Socket testSocket = null;
-//        try {
-//            testSocket = new Socket(TEST_HOSTNAME, TEST_PORT);
-// 
-//            assertTrue(echoServer.clientConnect());
-//        } catch (Exception e) {
-//            assertTrue(false);
-//        }
-// 
-//        echoServer.serverDisconnect();
-//        try {
-//            testSocket.close();
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//    }
-// 
-//    @Test
-//    public void testClientDisconnect() {
-//        Socket testSocket = null;
-//        try {
-//            testSocket = new Socket(TEST_HOSTNAME, TEST_PORT);
-//            echoServer.clientConnect();
-//            echoServer.clientDisconnect();
-//            Scanner testScanner = new Scanner(testSocket.getInputStream());
-//            testScanner.nextLine();
-//            assertTrue(false);
-//        } catch (Exception e) {
-//        }
-// 
-//        try {
-//            testSocket.close();
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//    }
-// 
-//    @Test
-//    public void testServerDisconnect() {
-//        Socket testSocket = null;
-//        try {
-//            testSocket = new Socket(TEST_HOSTNAME, TEST_PORT);
-//            echoServer.clientConnect();
-//            echoServer.serverDisconnect();
-//            Scanner testScanner = new Scanner(testSocket.getInputStream());
-//            testScanner.nextLine();
-//            assertTrue(false);
-//        } catch (Exception e) {
-//        }
-// 
-//        try {
-//            testSocket.close();
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//    }
-// 
-//    @Test
-//    public void testClientMessage() {
-//        Socket testSocket = null;
-//        String testMessage = "Test Message";
-//        try {
-//            testSocket = new Socket(TEST_HOSTNAME, TEST_PORT);
-//            echoServer.clientConnect();
-//            PrintWriter testWriter = new PrintWriter(
-//                    testSocket.getOutputStream(), true);
-//            testWriter.println(testMessage);
-//            String resultString = echoServer.getMessage();
-//            assertEquals(testMessage, resultString);
-//        } catch (Exception e) {
-//            assertTrue(false);
-//        }
-// 
-//        try {
-//            testSocket.close();
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//    }
-// 
-//    @Test
-//    public void testClientMessageBye() {
-//        Socket testSocket = null;
-//        String testMessage = "Bye";
-//        try {
-//            testSocket = new Socket(TEST_HOSTNAME, TEST_PORT);
-//            echoServer.clientConnect();
-//            PrintWriter testWriter = new PrintWriter(
-//                    testSocket.getOutputStream(), true);
-//            testWriter.println(testMessage);
-//            echoServer.getMessage();
-//            Scanner testScanner = new Scanner(testSocket.getInputStream());
-//            testScanner.nextLine();
-//            assertTrue(false);
-//        } catch (Exception e) {
-//        }
-// 
-//        try {
-//            testSocket.close();
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//    }
-//}

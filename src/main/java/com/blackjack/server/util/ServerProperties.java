@@ -9,7 +9,7 @@ public enum ServerProperties {
 
 	PORT("server.port"),
 	NAME("server.name");
-
+	
 	private String key;
 
 	private ServerProperties(String key) {
@@ -32,7 +32,7 @@ public enum ServerProperties {
 	 * to get data by key provided in the current enum value. 
 	 * @return value by key
 	 */
-	public Object getValue() {
-		return properties.get(key);
+	public String getValue() {
+		return (String) properties.get(key);
 	}
 }

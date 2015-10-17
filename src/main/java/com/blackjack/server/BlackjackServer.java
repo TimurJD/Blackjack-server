@@ -8,9 +8,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.blackjack.model.Card;
+import com.blackjack.model.Rank;
+import com.blackjack.model.Suit;
 import com.blackjack.server.exception.EmptyPropertyException;
 
 /**
@@ -20,13 +25,13 @@ import com.blackjack.server.exception.EmptyPropertyException;
 public class BlackjackServer {
 
 	private final Logger logger = Logger.getLogger(this.getClass());
-
+		
 	private Socket socket;
 	private ServerSocket server;
 
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
-
+	
 	
 	/**
 	 * The method incapsulates all logic during start up. 
@@ -46,7 +51,7 @@ public class BlackjackServer {
 	}
 
 	private void waitForConnection() throws IOException {
-		logger.info("The server is waiting for clients t");
+		logger.info("The server is waiting for clients");
 		socket = server.accept();
 		logger.info("Connected: " + socket.getInetAddress().getHostName());
 	}
@@ -80,7 +85,7 @@ public class BlackjackServer {
 	 * @param object the object to be sended to a client.
 	 * @throws IOException - if I/O errors occur while writing to the underlying stream.
 	 */
-	public void sendDataToClient(Object object) throws IOException {
+	public void sendDataToClient(Object object) throws IOException { // Also think abut this: What if i write methods to sed hand, and status?
 		out.writeObject(object);
 		out.flush();
 	}
@@ -96,11 +101,6 @@ public class BlackjackServer {
 	/**
 	 * Returns the connection state of the socket.
 	 * <p>
-	 * Note: Closing a socket doesn't clear its connection state, which means
-	 * this method will return {@code true} for a closed socket (see
-	 * {@link java.net.Socket.isConnected}) if it was successfuly connected
-	 * prior to being closed.
-	 *
 	 * @return true if the socket was successfuly connected to a server
 	 */
 	public boolean isClientConnected() {
@@ -109,6 +109,33 @@ public class BlackjackServer {
 	
 	@Override
 	public String toString() {
-		return (String) NAME.getValue();
+		return NAME.getValue();
+	}
+	
+	public static void main(String[] args) throws IOException, EmptyPropertyException, ClassNotFoundException {
+		BlackjackServer server = new BlackjackServer();
+		server.startUp();
+		
+		// Server get bet from client and decide to response hand if bet > 0
+		int bet = (int) server.getDataFromClient();
+		System.out.println("Client make a bet: " + bet);
+		if(bet > 0) {			
+			List<Card> handToClient = new ArrayList<Card>(2);
+			handToClient.add(new Card(Rank.KING, Suit.CLUB));
+			handToClient.add(new Card(Rank.ACE, Suit.HEARTS));
+			
+			// Now the server have to summ the score and send status to client
+			int sum = 0;
+			for(Card c: handToClient) {
+				sum += c.getRank().getScore();
+			}
+			
+			if(sum == 21) {				
+				server.sendDataToClient(handToClient);
+				server.sendDataToClient("*** YOU WON ***");
+			} else {
+				server.sendDataToClient(handToClient);
+			}
+		}
 	}
 }

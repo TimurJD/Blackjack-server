@@ -33,6 +33,6 @@ public enum ServerProperties {
 	 * @return value by key
 	 */
 	public String getValue() {
-		return (String) properties.get(key);
+		return (String) properties.getProperty(key);
 	}
 }

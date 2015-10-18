@@ -5,34 +5,29 @@ package com.blackjack.model;
  */
 public enum Rank {
 		
-	TWO((byte) 2),
-	THREE((byte) 3),
-	FOUR((byte) 4),
-	FIVE((byte) 5),
-	SIX((byte) 6),
-	SEVEN((byte) 7),
-	EIGHT((byte) 8),
-	NINE((byte) 9),
-	TEN((byte) 10),
-	JACK((byte) 10),
-	QUEEN((byte) 10),
-	KING((byte) 10),
-	ACE((byte) 11);
+	TWO(2),
+	THREE(3),
+	FOUR(4),
+	FIVE(5),
+	SIX(6),
+	SEVEN(7),
+	EIGHT(8),
+	NINE(9),
+	TEN(10),
+	JACK(10),
+	QUEEN(10),
+	KING(10),
+	ACE(11);
 	
-	private byte score;
+	private int score;
 	
 	public static final byte NUMBERS_OF_RANKS = 13;
 	
-	private Rank(byte score) {
+	private Rank(int score) {
 		this.score = score;
 	}
 	
-	public byte getScore() {
+	public int getScore() {
 		return score;
-	}
-	
-	public static void main(String[] args) {
-		char c = '\u25C6';
-		System.out.println(c);
 	}
 }

@@ -8,12 +8,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.blackjack.model.GameStatus;
 import com.blackjack.server.exception.EmptyPropertyException;
 
 /**
@@ -25,7 +28,7 @@ public class BlackjackServerTest {
 	private ObjectOutputStream clientOut;
 	private ObjectInputStream clientIn;
 
-	private BlackjackServer server;
+	private Server<Map<String, Object>, GameStatus> server;
 
 	@Before
 	public void setUp() throws UnknownHostException, IOException, InterruptedException {
@@ -61,11 +64,10 @@ public class BlackjackServerTest {
 	}
 
 	@Test
-	public void shouldGetMessageFromClient() {
-		String expected = "Hello World!";
+	public void shouldGetStatusFromClient() {
 		try {
-			clientOut.writeObject(expected);
-			assertEquals(expected, server.getDataFromClient());
+			clientOut.writeObject(GameStatus.BET);
+			assertEquals(GameStatus.BET, server.getDataFromClient());
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -75,10 +77,13 @@ public class BlackjackServerTest {
 	
 	@Test
 	public void shouldSendMessageToClient() {
+		Map<String, Object> map = new HashMap<String, Object>();
 		String expected = "Hello World!";
+		map.put("message", expected);
 		try {
-			server.sendDataToClient(expected);
-			assertEquals(expected, clientIn.readObject());
+			server.sendDataToClient(map);
+			Map<String, Object> actual = (Map<String, Object>) clientIn.readObject();
+			assertEquals(expected, actual.get("message"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {

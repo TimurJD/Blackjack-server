@@ -66,8 +66,8 @@ public class BlackjackServerTest {
 	@Test
 	public void shouldGetStatusFromClient() {
 		try {
-			clientOut.writeObject(GameStatus.BET);
-			assertEquals(GameStatus.BET, server.getDataFromClient());
+			clientOut.writeObject(GameStatus.DEAL);
+			assertEquals(GameStatus.DEAL, server.getDataFromClient());
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {

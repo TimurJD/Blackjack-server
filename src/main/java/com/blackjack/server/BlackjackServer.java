@@ -8,16 +8,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.blackjack.model.Card;
 import com.blackjack.model.GameStatus;
-import com.blackjack.model.Rank;
-import com.blackjack.model.Suit;
 import com.blackjack.server.exception.EmptyPropertyException;
 
 /**
@@ -56,6 +51,7 @@ public class BlackjackServer implements Server<Map<String, Object>, GameStatus> 
 	private void waitForConnection() throws IOException {
 		logger.info("The server is waiting for clients");
 		socket = server.accept();
+		socket.setKeepAlive(true);
 		logger.info("Connected: " + socket.getInetAddress().getHostName());
 	}
 
@@ -93,6 +89,7 @@ public class BlackjackServer implements Server<Map<String, Object>, GameStatus> 
 	public void sendDataToClient(Map<String, Object> object) throws IOException { // Also think abut this: What if i write methods to sed hand, and status?
 		out.writeObject(object);
 		out.flush();
+		out.reset();
 	}
 
 	/**
@@ -118,31 +115,4 @@ public class BlackjackServer implements Server<Map<String, Object>, GameStatus> 
 	public String toString() {
 		return NAME.getValue();
 	}
-	
-//	public static void main(String[] args) throws IOException, EmptyPropertyException, ClassNotFoundException {
-//		BlackjackServer server = new BlackjackServer();
-//		server.startUp();
-//		
-//		// Server get bet from client and decide to response hand if bet > 0
-//		int bet = (int) server.getDataFromClient();
-//		System.out.println("Client make a bet: " + bet);
-//		if(bet > 0) {			
-//			List<Card> handToClient = new ArrayList<Card>(2);
-//			handToClient.add(new Card(Rank.KING, Suit.CLUB));
-//			handToClient.add(new Card(Rank.ACE, Suit.HEARTS));
-//			
-//			// Now the server have to summ the score and send status to client
-//			int sum = 0;
-//			for(Card c: handToClient) {
-//				sum += c.getRank().getScore();
-//			}
-//			
-//			if(sum == 21) {				
-//				server.sendDataToClient(handToClient);
-//				server.sendDataToClient("*** YOU WON ***");
-//			} else {
-//				server.sendDataToClient(handToClient);
-//			}
-//		}
-//	}
 }

@@ -22,7 +22,7 @@ public class Card implements Serializable {
 	public Suit getSuit() {
 		return suit;
 	}
-	
+		
 	/**
 	 * @return String representation of Card.
 	 */

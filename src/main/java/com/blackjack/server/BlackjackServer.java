@@ -19,7 +19,7 @@ import com.blackjack.server.exception.EmptyPropertyException;
  * Simple Blackjack socket server
  * @author Timur Berezhnoi
  */
-public class BlackjackServer implements Server<Map<String, Object>, GameStatus> {
+public class BlackjackServer implements Server<Map<String, Object>, GameStatus> { // TODO Think about change to: BlackjackServer<T1, T2> implements Server<T1, T2>
 
 	private final Logger logger = Logger.getLogger(this.getClass());
 		

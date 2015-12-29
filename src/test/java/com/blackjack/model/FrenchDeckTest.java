@@ -1,8 +1,6 @@
 package com.blackjack.model;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,27 +18,30 @@ public class FrenchDeckTest {
 	}
 	
 	@Test
-	public void shouldInitNonNullyDeck() {
-		assertNotNull(deck.init());
-	}
-	
-	@Test
-	public void shouldBeDeckSize52() {
+	public void deckSizeShouldBe52() {
 		int expected = 52;
 		assertEquals(expected, deck.getCardsLeft());
-	}
-	
-	@Test
-	public void shouldBeDifferentDeckAfterShuffeling() {
-		List<Card> unexpected = deck.getDeck();
-		deck.shuffle();
-		assertNotEquals(unexpected, deck.getDeck());
 	}
 	
 	@Test
 	public void shouldDecreaseAmountOfCardsAfterGetCard() {
 		deck.getNextCard();
 		int expected = 51;
+		assertEquals(expected, deck.getCardsLeft());
+		
+		deck.getNextCard();
+		expected = 50;
+		assertEquals(expected, deck.getCardsLeft());
+	}
+	
+	@Test
+	public void deckSizeShouldBe52AfterShuffle() {
+		deck.getNextCard();
+		deck.getNextCard();
+		deck.getNextCard();
+		
+		deck.shuffle();
+		int expected = 52;
 		assertEquals(expected, deck.getCardsLeft());
 	}
 }

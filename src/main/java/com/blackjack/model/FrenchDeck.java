@@ -12,15 +12,16 @@ import java.util.List;
  */
 public class FrenchDeck implements Deck {
 	
+	public static final byte CARDS_AMOUNT = 52; 
+	
 	private List<Card> cards = init();
 	
 	public FrenchDeck() {
 		shuffle();
 	}
 
-	@Override
-	public List<Card> init() {
-		ArrayList<Card> result = new ArrayList<Card>(52);
+	private List<Card> init() {
+		ArrayList<Card> result = new ArrayList<Card>(CARDS_AMOUNT);
 		int index = 0;
 		for (int i = 0; i < Suit.NUMBERS_OF_SUITS; i++) {
 			for (int b = 0; b < Rank.NUMBERS_OF_RANKS; b++) {
@@ -33,15 +34,16 @@ public class FrenchDeck implements Deck {
 
 	@Override
 	public void shuffle() {
-		cards.clear();
 		cards = init();
 		Collections.shuffle(cards);
 	}
 
 	@Override
 	public Card getNextCard() {
-		Card result = cards.remove(cards.size() - 1);
-		return result;
+		if(cards.size() == 0) {
+			shuffle();
+		}
+		return cards.remove(cards.size() - 1);
 	}
 
 	@Override
@@ -50,7 +52,7 @@ public class FrenchDeck implements Deck {
 	}
 	
 	@Override
-	public List<Card> getDeck() {
-		return cards;
+	public String toString() {
+		return cards.toString();
 	}
 }

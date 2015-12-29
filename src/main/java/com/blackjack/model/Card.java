@@ -7,6 +7,8 @@ import java.io.Serializable;
  */
 public class Card implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
+	
 	private Rank rank;
 	private Suit suit;
 	
@@ -22,7 +24,7 @@ public class Card implements Serializable {
 	public Suit getSuit() {
 		return suit;
 	}
-		
+
 	/**
 	 * @return String representation of Card.
 	 */

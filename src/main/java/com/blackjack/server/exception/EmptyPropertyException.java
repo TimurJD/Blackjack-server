@@ -7,6 +7,8 @@ package com.blackjack.server.exception;
  */
 public class EmptyPropertyException extends Exception {
 	
+	private static final long serialVersionUID = 1L;
+
 	public EmptyPropertyException(String message) {
 		super(message);
 	}

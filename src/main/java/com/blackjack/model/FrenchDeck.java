@@ -40,6 +40,7 @@ public class FrenchDeck implements Deck {
 
 	@Override
 	public Card getNextCard() {
+		System.out.println(cards.size());
 		if(cards.size() == 0) {
 			shuffle();
 		}

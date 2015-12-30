@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.blackjack.model.Card;
 import com.blackjack.model.Deck;
 import com.blackjack.model.FrenchDeck;
 import com.blackjack.model.GameStatus;
@@ -14,30 +15,33 @@ import com.blackjack.server.exception.EmptyPropertyException;
  * @author Timur Berezhnoi
  */
 public class ServerEngine {
-
 	public static void main(String[] args) throws IOException, EmptyPropertyException, InterruptedException {
 
+		// Stage - 1
 		BlackjackServer server = new BlackjackServer();
+
 		System.out.println("Server is waiting for clients....");
-		
 		server.startUp();
+
 		System.out.println("Client connected!");
 
 		Deck deck = new FrenchDeck();
 
+		Map<String, Object> data = new HashMap<String, Object>();
+
 		try {
 			while (true) {
+				
+				data.put("status", GameStatus.IN_PROCESS);
+				
+				// Stage - 2
+				server.getDataFromClient();
+
 				Hand dealerHand = new Hand();
 				Hand playerHand = new Hand();
 
-				Map<String, Object> data = new HashMap<String, Object>();
-
-				// Server waits for the client bet (status)
-				server.getDataFromClient();
-
-				// Server creates hads for dealer and client
 				dealerHand.addCard(deck.getNextCard());
-				dealerHand.addCard(deck.getNextCard());
+				Card featureCardForDealer = deck.getNextCard();
 
 				playerHand.addCard(deck.getNextCard());
 				playerHand.addCard(deck.getNextCard());
@@ -47,27 +51,37 @@ public class ServerEngine {
 
 				if (playerHand.getHandScore() == 21) {
 					data.put("status", GameStatus.PLAYER_WON);
+					dealerHand.addCard(featureCardForDealer);
 					server.sendDataToClient(data);
 					continue;
-				} else {					
+				} else {
+					// Stage - 3
 					server.sendDataToClient(data);
-				}
-				
-				GameStatus status = server.getDataFromClient();
-				while (status != GameStatus.STAND) {
-				
-					playerHand.addCard(deck.getNextCard());
-					
-					if (playerHand.getHandScore() > 21) {
-						data.put("status", GameStatus.BUST);
-						server.sendDataToClient(data);
-						break;
-					} else if (playerHand.getHandScore() == 21) {
-						data.put("status", GameStatus.PLAYER_WON);
-						server.sendDataToClient(data);
-						break;
-					} else if (playerHand.getHandScore() < 21) {
-						data.put("status", GameStatus.CONTINUE);
+					while (true) {
+						GameStatus status = server.getDataFromClient();
+
+						if (status == GameStatus.STAND) {
+							dealerHand.addCard(featureCardForDealer);
+							server.sendDataToClient(data);
+							break;
+						} else if (status == GameStatus.HIT) {
+							playerHand.addCard(deck.getNextCard());
+							if (playerHand.getHandScore() == 21) {
+								data.put("status", GameStatus.PLAYER_WON);
+								dealerHand.addCard(featureCardForDealer);
+								server.sendDataToClient(data);
+								break;
+							} else if (playerHand.getHandScore() > 21) {
+								data.put("status", GameStatus.BUST);
+								dealerHand.addCard(featureCardForDealer);
+								server.sendDataToClient(data);
+								break;
+							} else {
+								data.put("status", GameStatus.IN_PROCESS);
+								server.sendDataToClient(data);
+								continue;
+							}
+						}
 					}
 				}
 			}

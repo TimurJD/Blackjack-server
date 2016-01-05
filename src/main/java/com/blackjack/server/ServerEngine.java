@@ -1,14 +1,9 @@
 package com.blackjack.server;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
-import com.blackjack.model.Card;
-import com.blackjack.model.Deck;
 import com.blackjack.model.FrenchDeck;
 import com.blackjack.model.GameStatus;
-import com.blackjack.model.Hand;
 import com.blackjack.server.exception.EmptyPropertyException;
 
 /**
@@ -24,61 +19,45 @@ public class ServerEngine {
 		server.startUp();
 
 		System.out.println("Client connected!");
-
-		Deck deck = new FrenchDeck();
-
-		Map<String, Object> data = new HashMap<String, Object>();
+		
+		Dealer dealer = new Dealer(server, new FrenchDeck());
 
 		try {
 			while (true) {
 				
-				data.put("status", GameStatus.IN_PROCESS);
-				
 				// Stage - 2
-				server.getDataFromClient();
+				dealer.dropHands(); // TODO here we can cheeck player money bet
 
-				Hand dealerHand = new Hand();
-				Hand playerHand = new Hand();
-
-				dealerHand.addCard(deck.getNextCard());
-				Card featureCardForDealer = deck.getNextCard();
-
-				playerHand.addCard(deck.getNextCard());
-				playerHand.addCard(deck.getNextCard());
-
-				data.put("dealerHand", dealerHand);
-				data.put("playerHand", playerHand);
-
-				if (playerHand.getHandScore() == 21) {
-					data.put("status", GameStatus.PLAYER_WON);
-					dealerHand.addCard(featureCardForDealer);
-					server.sendDataToClient(data);
+				if (dealer.getPlayerHand().getHandScore() == 21) {
+					dealer.setStatus(GameStatus.PLAYER_WON);
+					dealer.dealerFutureCard();
+					dealer.dealHand();
 					continue;
 				} else {
 					// Stage - 3
-					server.sendDataToClient(data);
+					dealer.dealHand();
 					while (true) {
-						GameStatus status = server.getDataFromClient();
+						GameStatus status = dealer.checkPlayerAction();
 
 						if (status == GameStatus.STAND) {
-							dealerHand.addCard(featureCardForDealer);
-							server.sendDataToClient(data);
+							dealer.dealerFutureCard();
+							dealer.sendData();
 							break;
 						} else if (status == GameStatus.HIT) {
-							playerHand.addCard(deck.getNextCard());
-							if (playerHand.getHandScore() == 21) {
-								data.put("status", GameStatus.PLAYER_WON);
-								dealerHand.addCard(featureCardForDealer);
-								server.sendDataToClient(data);
+							dealer.addCardToPlayerHand();
+							if (dealer.getPlayerHand().getHandScore() == 21) {
+								dealer.setStatus(GameStatus.PLAYER_WON);
+								dealer.dealerFutureCard();
+								dealer.sendData();
 								break;
-							} else if (playerHand.getHandScore() > 21) {
-								data.put("status", GameStatus.BUST);
-								dealerHand.addCard(featureCardForDealer);
-								server.sendDataToClient(data);
+							} else if (dealer.getPlayerHand().getHandScore() > 21) {
+								dealer.setStatus(GameStatus.BUST);
+								dealer.dealerFutureCard();
+								dealer.sendData();
 								break;
 							} else {
-								data.put("status", GameStatus.IN_PROCESS);
-								server.sendDataToClient(data);
+								dealer.setStatus(GameStatus.IN_PROCESS);
+								dealer.sendData();
 								continue;
 							}
 						}

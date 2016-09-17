@@ -7,18 +7,18 @@ import org.junit.Test;
 /**
  * @author Timur Berezhnoi
  */
-public class ServerPropertiesTest {
+public class ServerPropertyTest {
 	
 	@Test
 	public void shouldCorrectPort() {
 		String expected = "7765";
-		assertEquals(expected, ServerProperties.PORT.getValue());
+		assertEquals(expected, ServerProperty.PORT.getValue());
 	}
 	
 	@Test
 	public void shouldCorrectName() {
 		String expected = "Blackjack server";
-		assertEquals(expected, ServerProperties.NAME.getValue());
+		assertEquals(expected, ServerProperty.NAME.getValue());
 	}
 
 }

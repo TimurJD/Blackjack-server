@@ -1,7 +1,7 @@
 package com.blackjack.server;
 
-import static com.blackjack.server.util.ServerProperties.NAME;
-import static com.blackjack.server.util.ServerProperties.PORT;
+import static com.blackjack.server.util.ServerProperty.NAME;
+import static com.blackjack.server.util.ServerProperty.PORT;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

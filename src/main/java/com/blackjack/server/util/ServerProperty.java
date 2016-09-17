@@ -5,14 +5,14 @@ import java.util.Properties;
 /**
  * @author Timur Berezhnoi
  */
-public enum ServerProperties {
+public enum ServerProperty {
 
 	PORT("server.port"),
 	NAME("server.name");
 	
 	private String key;
 
-	private ServerProperties(String key) {
+    ServerProperty(String key) {
 		this.key = key;
 	}
 
@@ -21,7 +21,7 @@ public enum ServerProperties {
 	static {
 		properties = new Properties();
 		try {
-			properties.load(ServerProperties.class.getClassLoader().getResourceAsStream("server.properties"));
+			properties.load(ServerProperty.class.getClassLoader().getResourceAsStream("server.properties"));
 		} catch (Exception e) {
 			throw new RuntimeException("Error when loading configuration file", e);
 		}
@@ -33,6 +33,6 @@ public enum ServerProperties {
 	 * @return value by key
 	 */
 	public String getValue() {
-		return (String) properties.getProperty(key);
+		return properties.getProperty(key);
 	}
 }

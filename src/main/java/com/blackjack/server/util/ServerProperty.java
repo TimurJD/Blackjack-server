@@ -1,6 +1,11 @@
 package com.blackjack.server.util;
 
+import com.blackjack.server.constant.ErrorMessage;
+
+import java.io.IOException;
 import java.util.Properties;
+
+import static com.blackjack.server.constant.ErrorMessage.LOAD_PROPERTY_FAILD;
 
 /**
  * @author Timur Berezhnoi
@@ -22,9 +27,9 @@ public enum ServerProperty {
 		properties = new Properties();
 		try {
 			properties.load(ServerProperty.class.getClassLoader().getResourceAsStream("server.properties"));
-		} catch (Exception e) {
-			throw new RuntimeException("Error when loading configuration file", e);
-		}
+		} catch(IOException e) {
+            throw new RuntimeException(LOAD_PROPERTY_FAILD.getMessage(), e);
+        }
 	}
 
 	/**

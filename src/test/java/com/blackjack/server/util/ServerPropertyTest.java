@@ -12,13 +12,13 @@ public class ServerPropertyTest {
 	@Test
 	public void shouldCorrectPort() {
 		String expected = "7765";
-		assertEquals(expected, ServerProperty.PORT.getValue());
+		assertEquals(expected, ServerProperty.SERVER_PORT.getValue());
 	}
 	
 	@Test
 	public void shouldCorrectName() {
 		String expected = "Blackjack server";
-		assertEquals(expected, ServerProperty.NAME.getValue());
+		assertEquals(expected, ServerProperty.SERVER_NAME.getValue());
 	}
 
 }

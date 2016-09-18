@@ -1,7 +1,7 @@
 package com.blackjack.server;
 
-import static com.blackjack.server.util.ServerProperty.NAME;
-import static com.blackjack.server.util.ServerProperty.PORT;
+import static com.blackjack.server.util.ServerProperty.SERVER_NAME;
+import static com.blackjack.server.util.ServerProperty.SERVER_PORT;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -38,11 +38,11 @@ public class BlackjackServer implements Server<Map<String, Object>, GameStatus> 
 	 */
 	@Override
 	public void startUp() throws IOException, EmptyPropertyException {
-		if(PORT.getValue().isEmpty()) {
-			throw new EmptyPropertyException("The " + PORT + " have note been seted");
+		if(SERVER_PORT.getValue().isEmpty()) {
+			throw new EmptyPropertyException("The " + SERVER_PORT + " have note been seted");
 		}
 		
-		server = new ServerSocket(Integer.valueOf(PORT.getValue()));
+		server = new ServerSocket(Integer.valueOf(SERVER_PORT.getValue()));
 		waitForConnection();
 		setUpStreams();
 	
@@ -113,6 +113,6 @@ public class BlackjackServer implements Server<Map<String, Object>, GameStatus> 
 	
 	@Override
 	public String toString() {
-		return NAME.getValue();
+		return SERVER_NAME.getValue();
 	}
 }

@@ -1,6 +1,8 @@
 package com.blackjack.server.constant;
 
 /**
+ * The holder for error messages.
+ *
  * @author Timur Berezhnoi
  */
 public enum ErrorMessage {
@@ -12,6 +14,11 @@ public enum ErrorMessage {
         this.message = message;
     }
 
+    /**
+     * The getter for error message.
+     *
+     * @return error message
+     */
     public String getMessage() {
         return message;
     }
